@@ -1,4 +1,4 @@
-const ENV = process.env.NODE_ENV || "production";
+const ENV = process.env.NODE_ENV || "development";
 
 const { DB_URL } = process.env;
 
@@ -17,6 +17,13 @@ const baseConfig = {
 const customConfig = {
   production: {
     connection: `${DB_URL}?ssl=true`,
+  },
+  development: {
+    connection: {
+      database: "videostreams_test",
+      username: username,
+      password: password,
+    },
   },
   test: {
     connection: {
