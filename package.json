@@ -4,13 +4,18 @@
   "description": "first commit",
   "main": "index.js",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "knex": "^0.21.1",
     "pg": "^8.2.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "jest": "^26.1.0",
+    "supertest": "^4.0.2"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node listen.js",
+    "test": "jest ./spec/app.spec.js --watch",
     "setup-dbs": "psql -f ./db/setup.sql",
     "seed": "knex seed:run",
     "migrate-make": "knex migrate:make",
