@@ -165,6 +165,15 @@ describe("/api", () => {
             expect(msg).toEqual("user_id is invalid , needs to be a number");
           });
       });
+      test("status: 400 if user has no active streams, yet requests to close one", () => {
+        return request(app)
+          .get("/api/endstream/5")
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            console.log(msg);
+            expect(msg).toEqual("no active streams to close for user");
+          });
+      });
     });
   });
 });

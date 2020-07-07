@@ -80,6 +80,12 @@ exports.fetchEndStream = (user_id) => {
               };
             });
         }
+        if (session.stream_count === 0) {
+          return Promise.reject({
+            status: 400,
+            msg: "no active streams to close for user",
+          });
+        }
       });
   }
 };
