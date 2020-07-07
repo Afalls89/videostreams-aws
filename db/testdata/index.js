@@ -11,4 +11,8 @@ module.exports = [
     user_id: 3,
     stream_count: 3,
   },
+  {
+    user_id: 5,
+    stream_count: 0,
+  },
 ];

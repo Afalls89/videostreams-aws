@@ -52,3 +52,46 @@ exports.fetchNewStream = (user_id) => {
       });
   }
 };
+
+exports.fetchEndStream = (user_id) => {
+  if (isNaN(+user_id)) {
+    return Promise.reject({
+      status: 400,
+      msg: "user_id is invalid , needs to be a number",
+    });
+  } else {
+    return knex
+      .select("*")
+      .from("sessions")
+      .where({ user_id })
+      .then(([session]) => {
+        if (!session) {
+          return Promise.reject({
+            status: 400,
+            msg: "user_id not present in the database",
+          });
+        }
+        if (session.stream_count > 0) {
+          return knex
+            .decrement("stream_count", 1)
+            .from("sessions")
+            .where("session_id", "=", session.session_id)
+            .returning("*")
+            .then(([updatedSession]) => {
+              return {
+                streamStatus: {
+                  msg: "stream closed",
+                  streamCount: updatedSession.stream_count,
+                },
+              };
+            });
+        }
+        if (session.stream_count === 0) {
+          return Promise.reject({
+            status: 400,
+            msg: "no active streams to close for user",
+          });
+        }
+      });
+  }
+};

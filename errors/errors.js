@@ -3,8 +3,9 @@ exports.handle405s = (req, res, next) => {
 };
 
 exports.handle400s = (err, req, res, next) => {
-  if (err.msg) res.status(400).send({ msg: err.msg });
-  if (!err.msg && err.status) {
+  if (err.msg) {
+    res.status(400).send({ msg: err.msg });
+  } else if (!err.msg && err.status) {
     res.status(400).send({ msg: "Bad Request" });
   } else {
     next(err);

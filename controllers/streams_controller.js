@@ -1,4 +1,4 @@
-const { fetchNewStream } = require("../models/streams_models");
+const { fetchNewStream, fetchEndStream } = require("../models/streams_models");
 
 exports.getNewStream = (req, res, next) => {
   // user_id which was taken from the parametric endpoint
@@ -14,4 +14,14 @@ exports.getNewStream = (req, res, next) => {
     .catch(next);
 };
 
-exports.getEndStream = () => {};
+exports.getEndStream = (req, res, next) => {
+  // user_id which was taken from the parametric endpoint
+  // is take from the request parameters
+  const user_id = req.params.user_id;
+
+  fetchEndStream(user_id)
+    .then((streamStatus) => {
+      res.status(200).send(streamStatus);
+    })
+    .catch(next);
+};
