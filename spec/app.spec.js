@@ -15,6 +15,14 @@ describe("/", () => {
 });
 
 describe("/api", () => {
+  test("status: 404 returns object with message of Route not found", () => {
+    return request(app)
+      .get("/api/isNotAPath")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toEqual("Route not found");
+      });
+  });
   describe("INVALID METHODS", () => {
     test("returns status: 405, with object containing message of  Method not allowed", () => {
       const invalidMethods = ["patch", "put", "delete", "post"];
@@ -42,6 +50,34 @@ describe("/api", () => {
             "GET /api/endstream/:user_id"
           );
         });
+    });
+  });
+
+  describe("/api/startstream/:user_id", () => {
+    describe("INVALID METHODS", () => {
+      test("returns status: 405, with object containing message of  Method not allowed", () => {
+        const invalidMethods = ["patch", "put", "delete", "post"];
+        const promises = invalidMethods.map((method) => {
+          return request(app)
+            [method]("/api/startstream/:user_id")
+            .expect(405)
+            .then(({ body: { msg } }) => {
+              expect(msg).toEqual("Method not allowed");
+            });
+        });
+        return Promise.all(promises);
+      });
+    });
+    describe.only("GET", () => {
+      test("status: 200 returns an object with the keys : isNewStreamAllowed & streamCount for a specific user_id", () => {
+        return request(app)
+          .get("/api/startstream/:user_id")
+          .expect(200)
+          .then(({ body }) => {
+            console.log(body);
+            expect(body).toHaveProperty("isNewStreamAllowed", "streamCount");
+          });
+      });
     });
   });
 });

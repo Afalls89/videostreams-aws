@@ -14,6 +14,7 @@
     "supertest": "^4.0.2"
   },
   "scripts": {
+    "start": "node listen.js",
     "test": "jest",
     "setup-dbs": "psql -f ./db/setup.sql",
     "seed": "knex seed:run",
