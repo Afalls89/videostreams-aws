@@ -2,6 +2,15 @@ process.env.NODE_ENV = "test";
 
 const app = require("../app.js");
 const request = require("supertest");
+const knex = require("../db/connection");
+
+beforeEach(() => {
+  return knex.seed.run();
+});
+
+// after(() => {
+//   return knex.destroy();
+// });
 
 describe("/", () => {
   test("status: 404 returns object with message of Route not found", () => {
@@ -69,7 +78,7 @@ describe("/api", () => {
       });
     });
     describe("GET", () => {
-      test("status: 200 returns an object with the keys : isNewStreamAllowed & streamCount for a specific user_id", () => {
+      test("status: 200 if user who already has one active stream , requests to open another stream", () => {
         return request(app)
           .get("/api/startstream/1")
           .expect(200)
@@ -77,8 +86,9 @@ describe("/api", () => {
             console.log(body);
             expect(body.streamStatus).toHaveProperty(
               "isNewStreamAllowed",
-              "streamCount"
+              true
             );
+            expect(body.streamStatus).toHaveProperty("streamCount", 2);
           });
       });
     });
