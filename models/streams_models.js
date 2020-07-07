@@ -65,6 +65,12 @@ exports.fetchEndStream = (user_id) => {
       .from("sessions")
       .where({ user_id })
       .then(([session]) => {
+        if (!session) {
+          return Promise.reject({
+            status: 400,
+            msg: "user_id not present in the database",
+          });
+        }
         if (session.stream_count > 0) {
           return knex
             .decrement("stream_count", 1)

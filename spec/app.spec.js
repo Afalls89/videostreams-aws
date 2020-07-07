@@ -174,6 +174,15 @@ describe("/api", () => {
             expect(msg).toEqual("no active streams to close for user");
           });
       });
+      test("status: 400 if user has no active streams, yet requests to close one", () => {
+        return request(app)
+          .get("/api/endstream/999999")
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            console.log(msg);
+            expect(msg).toEqual("user_id not present in the database");
+          });
+      });
     });
   });
 });
