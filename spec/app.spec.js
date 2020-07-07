@@ -3,9 +3,20 @@ process.env.NODE_ENV = "test";
 const app = require("../app.js");
 const request = require("supertest");
 
+describe("/", () => {
+  test("status: 404 returns object with message of Route not found", () => {
+    return request(app)
+      .get("/isNotAPath")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toEqual("Route not found");
+      });
+  });
+});
+
 describe("/api", () => {
   describe("INVALID METHODS", () => {
-    it("returns status: 405, with object containing message of  Method not allowed", () => {
+    test("returns status: 405, with object containing message of  Method not allowed", () => {
       const invalidMethods = ["patch", "put", "delete", "post"];
       const promises = invalidMethods.map((method) => {
         return request(app)
