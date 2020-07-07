@@ -1,4 +1,8 @@
 const apiRouter = require("express").Router();
+const {
+  getNewStream,
+  getEndStream,
+} = require("../controllers/streams_controller");
 
 const { sendAllEndpoints } = require("../controllers/api_controller");
 

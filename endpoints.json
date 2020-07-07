@@ -1,0 +1,25 @@
+{
+  "GET /api": {
+    "description": "serves up a json representation of all the available endpoints of the api"
+  },
+  "GET /api/startstream/:user_id": {
+    "description": "serves an object with the keys : isNewStreamAllowed & streamCount for a specific user_id",
+    "requirements": "user_id must be a number with no special characters",
+    "exampleResponse": {
+      "streamStatus": {
+        "isNewStreamAllowed": "true",
+        "streamCount": "2"
+      }
+    }
+  },
+  "GET /api/endstream/:user_id": {
+    "description": "serves an object with the keys : msg & streamCount for a specific user_id",
+    "requirements": "user_id must be a number with no special characters",
+    "exampleResponse": {
+      "streamStatus": {
+        "msg": "stream ended",
+        "streamCount": "1"
+      }
+    }
+  }
+}

@@ -1,0 +1,3 @@
+exports.getNewStream = () => {};
+
+exports.getEndStream = () => {};
