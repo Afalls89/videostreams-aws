@@ -60,5 +60,26 @@ exports.fetchEndStream = (user_id) => {
       msg: "user_id is invalid , needs to be a number",
     });
   } else {
+    return knex
+      .select("*")
+      .from("sessions")
+      .where({ user_id })
+      .then(([session]) => {
+        if (session.stream_count > 0) {
+          return knex
+            .decrement("stream_count", 1)
+            .from("sessions")
+            .where("session_id", "=", session.session_id)
+            .returning("*")
+            .then(([updatedSession]) => {
+              return {
+                streamStatus: {
+                  msg: "stream closed",
+                  streamCount: updatedSession.stream_count,
+                },
+              };
+            });
+        }
+      });
   }
 };

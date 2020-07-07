@@ -145,6 +145,17 @@ describe("/api", () => {
       });
     });
     describe("GET", () => {
+      test("status: 200 if user who already has one active stream , requests to close a stream", () => {
+        return request(app)
+          .get("/api/endstream/2")
+          .expect(200)
+          .then(({ body }) => {
+            console.log(body);
+            expect(body.streamStatus).toHaveProperty("msg", "stream closed");
+            expect(body.streamStatus).toHaveProperty("streamCount", 1);
+          });
+      });
+
       test("status: 400 if user ID supplied in request is not a number", () => {
         return request(app)
           .get("/api/endstream/two")
