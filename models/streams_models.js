@@ -35,5 +35,13 @@ exports.fetchNewStream = (user_id) => {
             };
           });
       }
+      if (session.stream_count >= 3) {
+        return {
+          streamStatus: {
+            isNewStreamAllowed: false,
+            streamCount: session.stream_count,
+          },
+        };
+      }
     });
 };

@@ -62,7 +62,7 @@ describe("/api", () => {
     });
   });
 
-  describe.only("/api/startstream/1", () => {
+  describe("/api/startstream/1", () => {
     describe("INVALID METHODS", () => {
       test("returns status: 405, with object containing message of  Method not allowed", () => {
         const invalidMethods = ["patch", "put", "delete", "post"];
@@ -91,7 +91,7 @@ describe("/api", () => {
             expect(body.streamStatus).toHaveProperty("streamCount", 2);
           });
       });
-      test.only("status: 200 if user who already has one active stream , requests to open another stream", () => {
+      test("status: 200 if user is starting their first stream , requests to open first stream", () => {
         return request(app)
           .get("/api/startstream/4")
           .expect(200)
@@ -102,6 +102,19 @@ describe("/api", () => {
               true
             );
             expect(body.streamStatus).toHaveProperty("streamCount", 1);
+          });
+      });
+      test("status: 200 if user already has three active stream , requests to open a fourth stream, returns isNewStreamAllowed = false  ", () => {
+        return request(app)
+          .get("/api/startstream/3")
+          .expect(200)
+          .then(({ body }) => {
+            console.log(body);
+            expect(body.streamStatus).toHaveProperty(
+              "isNewStreamAllowed",
+              false
+            );
+            expect(body.streamStatus).toHaveProperty("streamCount", 3);
           });
       });
     });
