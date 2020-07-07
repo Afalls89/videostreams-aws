@@ -117,6 +117,15 @@ describe("/api", () => {
             expect(body.streamStatus).toHaveProperty("streamCount", 3);
           });
       });
+      test("status: 400 if user ID supplied in request is not a number", () => {
+        return request(app)
+          .get("/api/startstream/two")
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            console.log(msg);
+            expect(msg).toEqual("user_id is invalid , needs to be a number");
+          });
+      });
     });
   });
 });

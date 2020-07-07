@@ -7,9 +7,11 @@ exports.getNewStream = (req, res, next) => {
   // if the user has less than three active streams the fetchNewStream function
   // will return an object with a key of isNewStreamAllowed that will have a value of true
   // if the user already has three streams it will have a value of false
-  fetchNewStream(user_id).then((streamStatus) => {
-    res.status(200).send(streamStatus);
-  });
+  fetchNewStream(user_id)
+    .then((streamStatus) => {
+      res.status(200).send(streamStatus);
+    })
+    .catch(next);
 };
 
 exports.getEndStream = () => {};

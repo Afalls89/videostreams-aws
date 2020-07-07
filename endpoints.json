@@ -4,7 +4,7 @@
   },
   "GET /api/startstream/:user_id": {
     "description": "serves an object with the keys : isNewStreamAllowed & streamCount for a specific user_id",
-    "requirements": "user_id must be a number with no special characters",
+    "requirements": "user_id must be a number ",
     "exampleResponse": {
       "streamStatus": {
         "isNewStreamAllowed": "true",
@@ -14,7 +14,7 @@
   },
   "GET /api/endstream/:user_id": {
     "description": "serves an object with the keys : msg & streamCount for a specific user_id",
-    "requirements": "user_id must be a number with no special characters",
+    "requirements": "user_id must be a number ",
     "exampleResponse": {
       "streamStatus": {
         "msg": "stream ended",

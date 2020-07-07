@@ -1,5 +1,4 @@
 const testData = require("../testdata/index");
-console.log(testData);
 
 exports.seed = function (knex) {
   return knex.migrate
