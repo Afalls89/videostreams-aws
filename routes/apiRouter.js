@@ -11,9 +11,9 @@ const { sendAllEndpoints } = require("../controllers/api_controller");
 apiRouter.route("/").get(sendAllEndpoints).all(handle405s);
 
 // this route will be called to when a stream is requesting to be started
-apiRouter.route("/startstream/:user_id").get(getNewStream);
+apiRouter.route("/startstream/:user_id").get(getNewStream).all(handle405s);
 
 // this route will be called to when a stream has ended
-apiRouter.route("/endstream/:user_id").get(getEndStream);
+apiRouter.route("/endstream/:user_id").get(getEndStream).all(handle405s);
 
 module.exports = apiRouter;

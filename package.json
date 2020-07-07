@@ -15,7 +15,7 @@
   },
   "scripts": {
     "start": "node listen.js",
-    "test": "jest",
+    "test": "jest ./spec/app.spec.js --watch",
     "setup-dbs": "psql -f ./db/setup.sql",
     "seed": "knex seed:run",
     "migrate-make": "knex migrate:make",

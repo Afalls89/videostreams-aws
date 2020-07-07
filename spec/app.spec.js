@@ -53,13 +53,13 @@ describe("/api", () => {
     });
   });
 
-  describe("/api/startstream/:user_id", () => {
+  describe.only("/api/startstream/1", () => {
     describe("INVALID METHODS", () => {
       test("returns status: 405, with object containing message of  Method not allowed", () => {
         const invalidMethods = ["patch", "put", "delete", "post"];
         const promises = invalidMethods.map((method) => {
           return request(app)
-            [method]("/api/startstream/:user_id")
+            [method]("/api/startstream/1")
             .expect(405)
             .then(({ body: { msg } }) => {
               expect(msg).toEqual("Method not allowed");
@@ -68,14 +68,17 @@ describe("/api", () => {
         return Promise.all(promises);
       });
     });
-    describe.only("GET", () => {
+    describe("GET", () => {
       test("status: 200 returns an object with the keys : isNewStreamAllowed & streamCount for a specific user_id", () => {
         return request(app)
-          .get("/api/startstream/:user_id")
+          .get("/api/startstream/1")
           .expect(200)
           .then(({ body }) => {
             console.log(body);
-            expect(body).toHaveProperty("isNewStreamAllowed", "streamCount");
+            expect(body.streamStatus).toHaveProperty(
+              "isNewStreamAllowed",
+              "streamCount"
+            );
           });
       });
     });
