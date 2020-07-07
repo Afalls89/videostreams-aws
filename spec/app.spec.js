@@ -91,6 +91,19 @@ describe("/api", () => {
             expect(body.streamStatus).toHaveProperty("streamCount", 2);
           });
       });
+      test.only("status: 200 if user who already has one active stream , requests to open another stream", () => {
+        return request(app)
+          .get("/api/startstream/4")
+          .expect(200)
+          .then(({ body }) => {
+            console.log(body);
+            expect(body.streamStatus).toHaveProperty(
+              "isNewStreamAllowed",
+              true
+            );
+            expect(body.streamStatus).toHaveProperty("streamCount", 1);
+          });
+      });
     });
   });
 });
