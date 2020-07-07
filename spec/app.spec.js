@@ -128,4 +128,32 @@ describe("/api", () => {
       });
     });
   });
+
+  describe.only("/api/endstream/:user_id", () => {
+    describe("INVALID METHODS", () => {
+      test("returns status: 405, with object containing message of  Method not allowed", () => {
+        const invalidMethods = ["patch", "put", "delete", "post"];
+        const promises = invalidMethods.map((method) => {
+          return request(app)
+            [method]("/api/endstream/2")
+            .expect(405)
+            .then(({ body: { msg } }) => {
+              expect(msg).toEqual("Method not allowed");
+            });
+        });
+        return Promise.all(promises);
+      });
+    });
+    describe("GET", () => {
+      test("status: 400 if user ID supplied in request is not a number", () => {
+        return request(app)
+          .get("/api/endstream/two")
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            console.log(msg);
+            expect(msg).toEqual("user_id is invalid , needs to be a number");
+          });
+      });
+    });
+  });
 });

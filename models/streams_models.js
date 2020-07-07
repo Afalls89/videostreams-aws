@@ -52,3 +52,13 @@ exports.fetchNewStream = (user_id) => {
       });
   }
 };
+
+exports.fetchEndStream = (user_id) => {
+  if (isNaN(+user_id)) {
+    return Promise.reject({
+      status: 400,
+      msg: "user_id is invalid , needs to be a number",
+    });
+  } else {
+  }
+};
