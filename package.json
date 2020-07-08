@@ -1,0 +1,41 @@
+{
+  "name": "videostreams",
+  "version": "1.0.0",
+  "description": "first commit",
+  "main": "app.js",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "knex": "^0.21.1",
+    "pg": "^8.2.1"
+  },
+  "devDependencies": {
+    "jest": "^26.1.0",
+    "supertest": "^4.0.2"
+  },
+  "scripts": {
+    "start": "node listen.js",
+    "test": "jest ./spec/app.spec.js --watch",
+    "setup-dbs": "psql -f ./db/setup.sql",
+    "seed": "knex seed:run",
+    "migrate-make": "knex migrate:make",
+    "migrate-latest": "knex migrate:latest",
+    "migrate-rollback": "knex migrate:rollback",
+    "seed:prod": "NODE_ENV=production DB_URL=$(heroku config:get DATABASE_URL) knex seed:run",
+    "migrate-latest:prod": "NODE_ENV=production DB_URL=$(heroku config:get DATABASE_URL) knex migrate:latest",
+    "migrate-rollback:prod": "NODE_ENV=production DB_URL=$(heroku config:get DATABASE_URL) knex migrate:rollback"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Afalls89/videostreams.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Afalls89/videostreams/issues"
+  },
+  "engines": {
+    "node": "v12.16.3"
+  },
+  "homepage": "https://github.com/Afalls89/videostreams#readme"
+}
