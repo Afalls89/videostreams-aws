@@ -129,7 +129,7 @@ describe("/api", () => {
     });
   });
 
-  describe.only("/api/endstream/:user_id", () => {
+  describe("/api/endstream/:user_id", () => {
     describe("INVALID METHODS", () => {
       test("returns status: 405, with object containing message of  Method not allowed", () => {
         const invalidMethods = ["patch", "put", "delete", "post"];
