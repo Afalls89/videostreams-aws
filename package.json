@@ -14,7 +14,7 @@
     "supertest": "^4.0.2"
   },
   "scripts": {
-    "start": "node listen.js",
+    "start": "node listen.js npm run migrate-latest:prod",
     "test": "jest ./spec/app.spec.js --watch",
     "setup-dbs": "psql -f ./db/setup.sql",
     "seed": "knex seed:run",
