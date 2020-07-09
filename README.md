@@ -167,6 +167,18 @@ Please click here for the Hosted database:
 
 [Github] https://github.com/Afalls89/videotreams - Github repository
 
+## `Next steps and Scaling`
+
+To expand this application to an enterprise level I would look to deploy the application onto either AWS or GCP.
+With AWS the application would take the form of a Lamda function with the Database being a non-SQL DynamoDB.
+I would then look to put the application behind a load balancer that would distribute the requests between various Regions Availability zones.
+For example having a load balancer to serve London would distribute requests across zones eu-west2a,eu-west2b and eu-west2c.
+This would make the application Highly available in the sense that it is fault tolerant and easily accessible from that region.
+To expand this concept further I would look to have instances of the application in various aws regions across the globe with the same load balancing in effect.
+Terraform would be the way I would look to deploy this infrastructure, this ensures the infrastructure setup is version controlled and easily deployable.
+
+If this application was expanded in this way I also look to improve the security of the application by implementing Json Web Tokens to verify the origin of the the request to start/close a video stream. In addition I would look to encrypt the user ID being attached to the request.
+
 ## `Authors`
 
 - **Andrew Falls** - _Initial work_ - [Afalls89](https://github.com/Afalls89)
