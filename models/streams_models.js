@@ -1,4 +1,7 @@
-const knex = require("../db/connection");
+const AWS = require('aws-sdk')
+AWS.config.update({region: "eu-west-2"})
+
+const ddb = new AWS.DynamoDB()
 
 exports.fetchNewStream = (user_id) => {
   // if the user_id is equal to NaN when converted to a number
@@ -9,58 +12,30 @@ exports.fetchNewStream = (user_id) => {
       msg: "user_id is invalid , needs to be a number",
     });
   } else {
-    return knex
-      .select("*")
-      .from("sessions")
-      .where({ user_id })
-      .then(([session]) => {
-        // if there is no session present for the user_id
-        // then a session is created and stream count is set to one
-        if (!session) {
-          return knex
-            .insert({ user_id: user_id, stream_count: 1 })
-            .into("sessions")
-            .returning("*")
-            .then(([session]) => {
-              return {
-                streamStatus: {
-                  isNewStreamAllowed: true,
-                  streamCount: session.stream_count,
-                },
-              };
-            });
+
+        // query DB for session 
+        if (session!){
+          // if there is no session present for the user_id
+          // then a session is created and stream count is set to one
+         
+
         }
+       
         if (session.stream_count < 3) {
           //if the session corresponding to the user_id has less than
           // three streams then stream count is incremented by 1
           // isNewStreamAllowed: true is returned with the new stream count
-          return knex
-            .increment("stream_count", 1)
-            .from("sessions")
-            .where("session_id", "=", session.session_id)
-            .returning("*")
-            .then(([updatedSession]) => {
-              return {
-                streamStatus: {
-                  isNewStreamAllowed: true,
-                  streamCount: updatedSession.stream_count,
-                },
-              };
-            });
+
         }
+         
         if (session.stream_count >= 3) {
           //if the session corresponding to the user_id already has a
           // stream count of three, then isNewStreamAllowed is set to false,
           // and returned with  stream count
-          return {
-            streamStatus: {
-              isNewStreamAllowed: false,
-              streamCount: session.stream_count,
-            },
-          };
+          
         }
-      });
-  }
+      };
+  
 };
 
 exports.fetchEndStream = (user_id) => {

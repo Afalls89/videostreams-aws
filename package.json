@@ -4,6 +4,7 @@
   "description": "first commit",
   "main": "app.js",
   "dependencies": {
+    "aws-sdk": "^2.720.0",
     "express": "^4.17.1",
     "knex": "^0.21.1",
     "pg": "^8.2.1"
@@ -15,8 +16,8 @@
   "scripts": {
     "start": "node listen.js",
     "test": "jest ./spec/app.spec.js --watch",
-    "setup-dbs": "psql -f ./db/setup.sql",
-    "seed": "knex seed:run",
+    "setup-ddb": "node ./db/VideoStreamsCreateTable.js",
+    "seed-testdata": "node ./db/VideoStreamsLoadTestData.js",
     "migrate-make": "knex migrate:make",
     "migrate-latest": "knex migrate:latest",
     "migrate-rollback": "knex migrate:rollback",
