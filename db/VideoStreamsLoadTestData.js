@@ -9,7 +9,6 @@ testData.forEach((videostream) => {
   const params = {
     TableName: "videostreams",
     Item: {
-      session_id: videostream.session_id,
       user_id: videostream.user_id,
       stream_count: videostream.stream_count,
     },

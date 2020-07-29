@@ -5,8 +5,8 @@ const ddb = new AWS.DynamoDB();
 
 const params = {
   TableName: "videostreams",
-  KeySchema: [{ AttributeName: "session_id", KeyType: "HASH" }],
-  AttributeDefinitions: [{ AttributeName: "session_id", AttributeType: "N" }],
+  KeySchema: [{ AttributeName: "user_id", KeyType: "HASH" }],
+  AttributeDefinitions: [{ AttributeName: "user_id", AttributeType: "N" }],
   ProvisionedThroughput: {
     ReadCapacityUnits: 10,
     WriteCapacityUnits: 10,
