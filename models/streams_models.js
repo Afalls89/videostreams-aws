@@ -1,9 +1,14 @@
-const AWS = require('aws-sdk')
-AWS.config.update({region: "eu-west-2"})
+const AWS = require("aws-sdk");
+process.env.NODE_ENV = "test"
+  ? AWS.config.update({
+      region: "eu-west-2",
+      endpoint: "http://localhost:8000",
+    })
+  : AWS.config.update({ region: "eu-west-2" });
 
-const ddb = new AWS.DynamoDB()
+const docClient = new AWS.DynamoDB.DocumentClient();
 
-exports.fetchNewStream = (user_id) => {
+exports.fetchNewStream = async (user_id) => {
   // if the user_id is equal to NaN when converted to a number
   // user_id is invalid and an error is thrown
   if (isNaN(+user_id)) {
@@ -12,30 +17,61 @@ exports.fetchNewStream = (user_id) => {
       msg: "user_id is invalid , needs to be a number",
     });
   } else {
-
-        // query DB for session 
-        if (session!){
-          // if there is no session present for the user_id
-          // then a session is created and stream count is set to one
-         
-
+    docClient.query(
+      {
+        TableName: "videostreams",
+        KeyConditionExpression: "user_id = :Id",
+        ExpressionAttributeValues: {
+          ":Id": +user_id,
+        },
+      },
+      (err, data) => {
+        if (err) {
+          console.log("Unable to query. Error:", JSON.stringify(err, null, 2));
+        } else {
+          console.log(data.Items, "Query succeeded.");
+          return data.Items;
         }
-       
-        if (session.stream_count < 3) {
-          //if the session corresponding to the user_id has less than
-          // three streams then stream count is incremented by 1
-          // isNewStreamAllowed: true is returned with the new stream count
+      }
+    );
+    // query DB for session
+    if (response.length === 0) {
+      // if there is no  user present for user_id
+      // then a session is created and stream count is set to one
+      docClient.put(
+        {
+          TableName: "videostreams",
+          Item: {
+            user_id: user_id,
+            session_count: 1,
+          },
+        },
+        (err, data) => {
+          if (err) {
+            console.error(
+              "Unable to add item. Error JSON:",
+              JSON.stringify(err, null, 2)
+            );
+          } else {
+            console.log("Added item:", JSON.stringify(data, null, 2));
+            return data;
+          }
+        }
+      );
+    }
+  }
 
-        }
-         
-        if (session.stream_count >= 3) {
-          //if the session corresponding to the user_id already has a
-          // stream count of three, then isNewStreamAllowed is set to false,
-          // and returned with  stream count
-          
-        }
-      };
-  
+  // if (response.stream_count < 3) {
+  //   //if the session corresponding to the user_id has less than
+  //   // three streams then stream count is incremented by 1
+  //   // isNewStreamAllowed: true is returned with the new stream count
+  // }
+
+  // if (response.stream_count >= 3) {
+  //   //if the session corresponding to the user_id already has a
+  //   // stream count of three, then isNewStreamAllowed is set to false,
+  //   // and returned with  stream count
+  // }
 };
 
 exports.fetchEndStream = (user_id) => {

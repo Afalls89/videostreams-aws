@@ -1,3 +1,4 @@
 /node_modules
 credentials.js
 .env
+db/dynamodb_local_latest

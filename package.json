@@ -5,6 +5,7 @@
   "main": "app.js",
   "dependencies": {
     "aws-sdk": "^2.720.0",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "knex": "^0.21.1",
     "pg": "^8.2.1"
@@ -17,7 +18,9 @@
     "start": "node listen.js",
     "test": "jest ./spec/app.spec.js --watch",
     "setup-ddb": "node ./db/VideoStreamsCreateTable.js",
-    "seed-testdata": "node ./db/VideoStreamsLoadTestData.js",
+    "setup-ddb-local": "NODE_ENV=test node ./db/VideoStreamsCreateTable.js",
+    "seed-testdata": "NODE_ENV=test node ./db/VideoStreamsLoadTestData.js",
+    "list-tables": "NODE_ENV=test aws dynamodb list-tables --endpoint-url http://localhost:8000 --output table",
     "migrate-make": "knex migrate:make",
     "migrate-latest": "knex migrate:latest",
     "migrate-rollback": "knex migrate:rollback",

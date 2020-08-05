@@ -1,5 +1,10 @@
 const AWS = require("aws-sdk");
-AWS.config.update({ region: "eu-west-2" });
+process.env.NODE_ENV = "test"
+  ? AWS.config.update({
+      region: "eu-west-2",
+      endpoint: "http://localhost:8000",
+    })
+  : AWS.config.update({ region: "eu-west-2" });
 
 const ddb = new AWS.DynamoDB();
 
