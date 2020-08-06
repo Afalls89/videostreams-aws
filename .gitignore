@@ -2,3 +2,4 @@
 credentials.js
 .env
 db/dynamodb_local_latest
+shared-local-instance.db

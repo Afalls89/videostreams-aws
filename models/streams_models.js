@@ -8,7 +8,7 @@ process.env.NODE_ENV = "test"
 
 const docClient = new AWS.DynamoDB.DocumentClient();
 
-exports.fetchNewStream = async (user_id) => {
+exports.fetchNewStream = (user_id) => {
   // if the user_id is equal to NaN when converted to a number
   // user_id is invalid and an error is thrown
   if (isNaN(+user_id)) {
@@ -17,55 +17,75 @@ exports.fetchNewStream = async (user_id) => {
       msg: "user_id is invalid , needs to be a number",
     });
   } else {
-    docClient.query(
-      {
-        TableName: "videostreams",
-        KeyConditionExpression: "user_id = :Id",
-        ExpressionAttributeValues: {
-          ":Id": +user_id,
-        },
-      },
-      (err, data) => {
-        if (err) {
-          console.log("Unable to query. Error:", JSON.stringify(err, null, 2));
-        } else {
-          console.log(data.Items, "Query succeeded.");
-          return data.Items;
-        }
-      }
-    );
-    // query DB for session
-    if (response.length === 0) {
-      // if there is no  user present for user_id
-      // then a session is created and stream count is set to one
-      docClient.put(
+    return new Promise((resolve, reject) => {
+      docClient.query(
         {
           TableName: "videostreams",
-          Item: {
-            user_id: user_id,
-            session_count: 1,
+          KeyConditionExpression: "user_id = :Id",
+          ExpressionAttributeValues: {
+            ":Id": +user_id,
           },
         },
         (err, data) => {
           if (err) {
-            console.error(
-              "Unable to add item. Error JSON:",
+            console.log(
+              "Unable to query. Error:",
               JSON.stringify(err, null, 2)
             );
+            reject(err);
           } else {
-            console.log("Added item:", JSON.stringify(data, null, 2));
-            return data;
+            console.log(data.Items, "Query succeeded.");
+            resolve(data.Items);
           }
         }
       );
-    }
-  }
+    }).then((usersArray) => {
+      if (usersArray.length === 0) {
+        // if there is no  user present for user_id
+        // then a session is created and stream count is set to one
+        return new Promise((resolve, reject) => {
+          docClient.update(
+            {
+              TableName: "videostreams",
+              Key: {
+                user_id: +user_id,
+              },
+              UpdateExpression: "set stream_count = :sc",
+              ExpressionAttributeValues: {
+                ":sc": 1,
+              },
+              ReturnValues: "UPDATED_NEW",
+            },
+            (err, data) => {
+              console.log(data, "data");
+              if (err) {
+                console.error(
+                  "Unable to add item. Error JSON:",
+                  JSON.stringify(err, null, 2)
+                );
+                reject(err);
+              } else {
+                console.log("Added item:", JSON.stringify(data, null, 2));
+                resolve({
+                  streamStatus: {
+                    isNewStreamAllowed: true,
+                    streamCount: data.Attributes.stream_count,
+                  },
+                });
+              }
+            }
+          );
+        });
+      }
+      // if (usersArray.stream_count < 3) {
+      //if the session corresponding to the user_id has less than
+      // three streams then stream count is incremented by 1
+      // isNewStreamAllowed: true is returned with the new stream count
+      // }
+    });
 
-  // if (response.stream_count < 3) {
-  //   //if the session corresponding to the user_id has less than
-  //   // three streams then stream count is incremented by 1
-  //   // isNewStreamAllowed: true is returned with the new stream count
-  // }
+    // query DB for session
+  }
 
   // if (response.stream_count >= 3) {
   //   //if the session corresponding to the user_id already has a

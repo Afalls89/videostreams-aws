@@ -1,12 +1,23 @@
 process.env.NODE_ENV = "test";
-
+const { exec } = require("child_process");
 const app = require("../app.js");
 const request = require("supertest");
-// const knex = require("../db/connection");
 
-// beforeEach(() => {
-//   return knex.seed.run();
-// });
+beforeAll(() => {
+  return new Promise((resolve, reject) => {
+    exec(
+      "NODE_ENV=test node ./db/VideoStreamsDeleteTable.js && node ./db/VideoStreamsCreateTable.js && node ./db/VideoStreamsLoadTestData.js",
+      (error, stdout, stderr) => {
+        if (error) {
+          console.log(`error: ${error.message}`);
+          reject(error);
+        }
+        console.log(`stdout: ${stdout}`);
+        resolve();
+      }
+    );
+  });
+});
 
 describe("/", () => {
   test("status: 404 returns object with message of Route not found", () => {
