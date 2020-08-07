@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const apiRouter = require("./routes/apiRouter");
-const cors = require("cors");
+
 const { handle500s, handle400s } = require("./errors/errors");
 
 app.use("/api", apiRouter);

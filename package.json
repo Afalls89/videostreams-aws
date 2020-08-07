@@ -4,6 +4,8 @@
   "description": "first commit",
   "main": "app.js",
   "dependencies": {
+    "aws-sdk": "^2.720.0",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "knex": "^0.21.1",
     "pg": "^8.2.1"
@@ -14,9 +16,14 @@
   },
   "scripts": {
     "start": "node listen.js",
-    "test": "jest ./spec/app.spec.js --watch",
-    "setup-dbs": "psql -f ./db/setup.sql",
-    "seed": "knex seed:run",
+    "start-local": "NODE_ENV=test  node listen.js",
+    "test": "NODE_ENV=test jest ./spec/app.spec.js --watch",
+    "setup-ddb": "node ./db/VideoStreamsCreateTable.js",
+    "start-ddb-local": "java -Djava.library.path=./db/dynamodb_local_latest/DynamoDBLocal_lib -jar ./db/dynamodb_local_latest/DynamoDBLocal.jar -sharedDb",
+    "setup-ddb-local": "NODE_ENV=test node ./db/VideoStreamsCreateTable.js",
+    "delete-ddb-local": "NODE_ENV=test node ./db/VideoStreamsDeleteTable.js",
+    "seed-testdata": "NODE_ENV=test node ./db/VideoStreamsLoadTestData.js",
+    "list-tables": "NODE_ENV=test aws dynamodb list-tables --endpoint-url http://localhost:8000 --output table",
     "migrate-make": "knex migrate:make",
     "migrate-latest": "knex migrate:latest",
     "migrate-rollback": "knex migrate:rollback",
