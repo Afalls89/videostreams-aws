@@ -98,7 +98,7 @@ describe("/api", () => {
             expect(body.streamStatus).toHaveProperty("streamCount", 2);
           });
       });
-      test.only("status: 200 if user is starting their first stream , requests to open first stream", () => {
+      test("status: 200 if user is starting their first stream , requests to open first stream", () => {
         return request(app)
           .get("/api/startstream/4")
           .expect(200)

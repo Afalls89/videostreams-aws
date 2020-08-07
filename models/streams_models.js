@@ -77,21 +77,57 @@ exports.fetchNewStream = (user_id) => {
           );
         });
       }
-      // if (usersArray.stream_count < 3) {
-      //if the session corresponding to the user_id has less than
-      // three streams then stream count is incremented by 1
-      // isNewStreamAllowed: true is returned with the new stream count
-      // }
+      if (usersArray[0].stream_count < 3) {
+        // if the session corresponding to the user_id has less than
+        // three streams then stream count is incremented by 1
+        // isNewStreamAllowed: true is returned with the new stream count
+        return new Promise((resolve, reject) => {
+          docClient.update(
+            {
+              TableName: "videostreams",
+              Key: {
+                user_id: +user_id,
+              },
+              UpdateExpression: "set stream_count = stream_count + :sc",
+              ExpressionAttributeValues: {
+                ":sc": 1,
+              },
+              ReturnValues: "UPDATED_NEW",
+            },
+            (err, data) => {
+              console.log(data, "data");
+              if (err) {
+                console.error(
+                  "Unable to add item. Error JSON:",
+                  JSON.stringify(err, null, 2)
+                );
+                reject(err);
+              } else {
+                console.log("Added item:", JSON.stringify(data, null, 2));
+                resolve({
+                  streamStatus: {
+                    isNewStreamAllowed: true,
+                    streamCount: data.Attributes.stream_count,
+                  },
+                });
+              }
+            }
+          );
+        });
+      }
+      if (usersArray[0].stream_count >= 3) {
+        //   //if the session corresponding to the user_id already has a
+        //   // stream count of three, then isNewStreamAllowed is set to false,
+        //   // and returned with  stream count
+        return {
+          streamStatus: {
+            isNewStreamAllowed: false,
+            streamCount: usersArray[0].stream_count,
+          },
+        };
+      }
     });
-
-    // query DB for session
   }
-
-  // if (response.stream_count >= 3) {
-  //   //if the session corresponding to the user_id already has a
-  //   // stream count of three, then isNewStreamAllowed is set to false,
-  //   // and returned with  stream count
-  // }
 };
 
 exports.fetchEndStream = (user_id) => {
