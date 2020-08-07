@@ -59,7 +59,6 @@ describe("/api", () => {
         .get("/api")
         .expect(200)
         .then(({ body }) => {
-          console.log(body);
           expect(body).toHaveProperty(
             "GET /api",
             "GET /api/startstream/:user_id",
@@ -90,7 +89,6 @@ describe("/api", () => {
           .get("/api/startstream/1")
           .expect(200)
           .then(({ body }) => {
-            console.log(body);
             expect(body.streamStatus).toHaveProperty(
               "isNewStreamAllowed",
               true
@@ -103,7 +101,6 @@ describe("/api", () => {
           .get("/api/startstream/4")
           .expect(200)
           .then(({ body }) => {
-            console.log(body, "body");
             expect(body.streamStatus).toHaveProperty(
               "isNewStreamAllowed",
               true
@@ -116,7 +113,6 @@ describe("/api", () => {
           .get("/api/startstream/3")
           .expect(200)
           .then(({ body }) => {
-            console.log(body);
             expect(body.streamStatus).toHaveProperty(
               "isNewStreamAllowed",
               false
@@ -157,7 +153,6 @@ describe("/api", () => {
           .get("/api/endstream/2")
           .expect(200)
           .then(({ body }) => {
-            console.log(body);
             expect(body.streamStatus).toHaveProperty("msg", "stream closed");
             expect(body.streamStatus).toHaveProperty("streamCount", 1);
           });
@@ -181,7 +176,7 @@ describe("/api", () => {
             expect(msg).toEqual("no active streams to close for user");
           });
       });
-      test("status: 400 if user has no active streams, yet requests to close one", () => {
+      test("status: 400 if users stream count is not being tracked, yet requests to close one", () => {
         return request(app)
           .get("/api/endstream/999999")
           .expect(400)
