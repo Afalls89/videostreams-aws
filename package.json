@@ -16,6 +16,7 @@
   },
   "scripts": {
     "start": "node listen.js",
+    "start-local": "NODE_ENV=test  node listen.js",
     "test": "NODE_ENV=test jest ./spec/app.spec.js --watch",
     "setup-ddb": "node ./db/VideoStreamsCreateTable.js",
     "start-ddb-local": "java -Djava.library.path=./db/dynamodb_local_latest/DynamoDBLocal_lib -jar ./db/dynamodb_local_latest/DynamoDBLocal.jar -sharedDb",

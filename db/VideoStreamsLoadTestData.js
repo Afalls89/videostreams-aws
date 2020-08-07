@@ -1,7 +1,7 @@
 const AWS = require("aws-sdk");
 const testData = require("./testdata/index");
 
-process.env.NODE_ENV = "test"
+process.env.NODE_ENV === "test"
   ? AWS.config.update({
       region: "eu-west-2",
       endpoint: "http://localhost:8000",
