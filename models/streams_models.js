@@ -8,7 +8,51 @@ process.env.NODE_ENV === "test"
 
 const docClient = new AWS.DynamoDB.DocumentClient();
 
-exports.fetchNewStream = (user_id) => {
+const defaultUpdateParams = {
+  TableName: "videostreams",
+  Key: {
+    user_id: "",
+  },
+  UpdateExpression: "",
+  ExpressionAttributeValues: {
+    ":sc": 1,
+  },
+  ReturnValues: "UPDATED_NEW",
+};
+
+const queryUser = (params) => {
+  return new Promise((resolve, reject) => {
+    docClient.query(params, (err, data) => {
+      if (err) {
+        console.log("Unable to query. Error:", JSON.stringify(err, null, 2));
+        reject(err);
+      } else {
+        console.log(data.Items, "Query succeeded.");
+        resolve(data.Items);
+      }
+    });
+  });
+};
+
+const updateUsersStreamCount = (params, additionalParams) => {
+  updateParams = { ...params, ...additionalParams };
+  return new Promise((resolve, reject) => {
+    docClient.update(updateParams, (err, data) => {
+      if (err) {
+        console.error(
+          "Unable to add item. Error JSON:",
+          JSON.stringify(err, null, 2)
+        );
+        reject(err);
+      } else {
+        console.log("Added item:", JSON.stringify(data, null, 2));
+        resolve(data.Attributes.stream_count);
+      }
+    });
+  });
+};
+
+exports.fetchNewStream = async (user_id) => {
   // if the user_id is equal to NaN when converted to a number
   // user_id is invalid and an error is thrown
   if (isNaN(+user_id)) {
@@ -17,114 +61,67 @@ exports.fetchNewStream = (user_id) => {
       msg: "user_id is invalid , needs to be a number",
     });
   } else {
-    return new Promise((resolve, reject) => {
-      docClient.query(
+    const user = await queryUser({
+      TableName: "videostreams",
+      KeyConditionExpression: "user_id = :Id",
+      ExpressionAttributeValues: {
+        ":Id": +user_id,
+      },
+    });
+
+    if (user.length === 0) {
+      // if there is no  user present for user_id
+      // then a session is created and stream count is set to one
+      // return new Promise((resolve, reject) => {
+      const updatedStreamCount = await updateUsersStreamCount(
+        defaultUpdateParams,
         {
-          TableName: "videostreams",
-          KeyConditionExpression: "user_id = :Id",
-          ExpressionAttributeValues: {
-            ":Id": +user_id,
+          UpdateExpression: "set stream_count = :sc",
+          Key: {
+            user_id: +user_id,
           },
-        },
-        (err, data) => {
-          if (err) {
-            console.log(
-              "Unable to query. Error:",
-              JSON.stringify(err, null, 2)
-            );
-            reject(err);
-          } else {
-            console.log(data.Items, "Query succeeded.");
-            resolve(data.Items);
-          }
         }
       );
-    }).then((usersArray) => {
-      if (usersArray.length === 0) {
-        // if there is no  user present for user_id
-        // then a session is created and stream count is set to one
-        return new Promise((resolve, reject) => {
-          docClient.update(
-            {
-              TableName: "videostreams",
-              Key: {
-                user_id: +user_id,
-              },
-              UpdateExpression: "set stream_count = :sc",
-              ExpressionAttributeValues: {
-                ":sc": 1,
-              },
-              ReturnValues: "UPDATED_NEW",
-            },
-            (err, data) => {
-              if (err) {
-                console.error(
-                  "Unable to add item. Error JSON:",
-                  JSON.stringify(err, null, 2)
-                );
-                reject(err);
-              } else {
-                console.log("Added item:", JSON.stringify(data, null, 2));
-                resolve({
-                  streamStatus: {
-                    isNewStreamAllowed: true,
-                    streamCount: data.Attributes.stream_count,
-                  },
-                });
-              }
-            }
-          );
-        });
-      }
-      if (usersArray[0].stream_count < 3) {
-        // if the session corresponding to the user_id has less than
-        // three streams then stream count is incremented by 1
-        // isNewStreamAllowed: true is returned with the new stream count
-        return new Promise((resolve, reject) => {
-          docClient.update(
-            {
-              TableName: "videostreams",
-              Key: {
-                user_id: +user_id,
-              },
-              UpdateExpression: "set stream_count = stream_count + :sc",
-              ExpressionAttributeValues: {
-                ":sc": 1,
-              },
-              ReturnValues: "UPDATED_NEW",
-            },
-            (err, data) => {
-              if (err) {
-                console.error(
-                  "Unable to add item. Error JSON:",
-                  JSON.stringify(err, null, 2)
-                );
-                reject(err);
-              } else {
-                console.log("Added item:", JSON.stringify(data, null, 2));
-                resolve({
-                  streamStatus: {
-                    isNewStreamAllowed: true,
-                    streamCount: data.Attributes.stream_count,
-                  },
-                });
-              }
-            }
-          );
-        });
-      }
-      if (usersArray[0].stream_count >= 3) {
-        //   //if the session corresponding to the user_id already has a
-        //   // stream count of three, then isNewStreamAllowed is set to false,
-        //   // and returned with  stream count
-        return {
-          streamStatus: {
-            isNewStreamAllowed: false,
-            streamCount: usersArray[0].stream_count,
+      return {
+        streamStatus: {
+          isNewStreamAllowed: true,
+          streamCount: updatedStreamCount,
+        },
+      };
+    }
+    if (user[0].stream_count < 3) {
+      // if the session corresponding to the user_id has less than
+      // three streams then stream count is incremented by 1
+      // isNewStreamAllowed: true is returned with the new stream count
+
+      const updatedStreamCount = await updateUsersStreamCount(
+        defaultUpdateParams,
+        {
+          Key: {
+            user_id: +user_id,
           },
-        };
-      }
-    });
+          UpdateExpression: "set stream_count = stream_count + :sc",
+        }
+      );
+      return {
+        streamStatus: {
+          isNewStreamAllowed: true,
+          streamCount: updatedStreamCount,
+        },
+      };
+    }
+    if (user[0].stream_count >= 3) {
+      //   //if the session corresponding to the user_id already has a
+      //   // stream count of three, then isNewStreamAllowed is set to false,
+      //   // and returned with  stream count
+      return {
+        streamStatus: {
+          isNewStreamAllowed: false,
+          streamCount: user[0].stream_count,
+        },
+      };
+    }
+    // });
   }
 };
 
